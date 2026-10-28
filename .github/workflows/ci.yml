@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OpenSCAD
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq openscad
+      - name: Check OpenSCAD version
+        run: openscad --version
+      - name: Render all models
+        run: ./scripts/export_stl.sh
+      - name: Verify STL bounding boxes and closed meshes
+        run: python3 scripts/check_stl.py openscad_scripts/stls
+      - name: Validate printer profile JSON
+        run: python3 -m json.tool profiles/bambu_p1s_profile.sample.json > /dev/null
+      - name: Fail if generated artifacts are tracked
+        run: |
+          tracked="$(git ls-files '*.stl' '*.pdf' '*.gcode' '*.3mf' || true)"
+          if [ -n "$tracked" ]; then
+            echo "Generated artifacts must not be committed:" >&2
+            echo "$tracked" >&2
+            exit 1
+          fi

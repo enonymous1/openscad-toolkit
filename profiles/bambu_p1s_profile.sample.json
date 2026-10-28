@@ -1,0 +1,66 @@
+{
+  "bed_temp_C": {
+    "ABS": 100,
+    "PETG": 80,
+    "PLA": 60
+  },
+  "build_volume_mm": {
+    "x": 256,
+    "y": 256,
+    "z": 256
+  },
+  "fan_percent": {
+    "ABS": 0,
+    "PETG": 40,
+    "PLA": 100
+  },
+  "features": [
+    "filament_runout_sensor",
+    "camera_timelapse",
+    "air_filter",
+    "power_loss_recovery",
+    "wifi_bluetooth_bambu_bus"
+  ],
+  "filament_diameter_mm": 1.75,
+  "first_layer_height_mm": 0.24,
+  "first_layer_speed_mm_s": 20,
+  "hotend_temp_C": {
+    "ABS": 250,
+    "PETG": 240,
+    "PLA": 205
+  },
+  "infill_density_percent": 15,
+  "infill_speed_mm_s": 80,
+  "kind": "mapping-reference",
+  "layer_height_mm": 0.16,
+  "max_bed_temp_C": 100,
+  "max_hotend_temp_C": 300,
+  "name": "P1S_starter",
+  "notes": "Mapping reference updated with manufacturer specs (build volume, max temperatures, nozzle options). For AMS use Bambu Filament when possible and avoid very soft or damp filaments such as TPU and damp PVA. Calibrate per filament and environment.",
+  "nozzle_diameter_mm": 0.4,
+  "nozzle_options_mm": [
+    0.2,
+    0.4,
+    0.6,
+    0.8
+  ],
+  "perimeters": 3,
+  "print_speed_mm_s": 50,
+  "printer": "Bambu Lab P1S",
+  "retraction_mm": 0.9,
+  "retraction_speed_mm_s": 35,
+  "supported_filaments": [
+    "PLA",
+    "PETG",
+    "TPU",
+    "ABS",
+    "ASA",
+    "PVA",
+    "PET",
+    "PA",
+    "PC"
+  ],
+  "top_solid_layers": 6,
+  "travel_speed_mm_s": 200,
+  "version": "0.2"
+}

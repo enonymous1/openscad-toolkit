@@ -1,0 +1,15 @@
+# Keep line endings LF in the repo, whatever the checkout platform is.
+# Without this, a Windows checkout converts every text file to CRLF and
+# the whole tree shows as modified against the LF history.
+* text=auto eol=lf
+*.scad text eol=lf
+*.ps1 text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.stl binary
+*.pdf binary
+*.png binary
+*.jpg binary

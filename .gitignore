@@ -1,0 +1,22 @@
+# Generated STL output (rendered locally or in CI; never committed)
+openscad_scripts/stls/
+*.stl
+*.gcode
+*.3mf
+
+# Bambu Studio / slicer artifacts
+*.bbl
+*.bambu
+
+# Python (scripts/check_stl.py)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store
