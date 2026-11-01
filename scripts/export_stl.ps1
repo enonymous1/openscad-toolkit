@@ -7,8 +7,9 @@
     into openscad_scripts/stls/. The ZenDrive "Both" and "Assembled"
     previews are not exported: a single STL holding two separate solids
     is confusing to slice, so Box and Lid are exported separately with
-    the part selected via -D. Any failed render stops the script with
-    an error instead of leaving a stale STL behind.
+    the part selected via -D. Each target STL is deleted before its
+    render, so a failed run never leaves a previous STL in place to be
+    sliced by mistake.
 
     Requires OpenSCAD 2021.01 (or a newer nightly) on PATH as
     openscad.exe, at the default install location, or passed with
@@ -32,6 +33,14 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $OutDir) { $OutDir = Join-Path $RepoRoot "openscad_scripts\stls" }
 if (-not (Test-Path $OutDir)) { New-Item -ItemType Directory -Path $OutDir | Out-Null }
 
+# Clear previously generated outputs up front: deleting each target
+# only as it is rendered would still leave stale files for models
+# never reached after an early failure.
+@("calibration_cube.stl", "temperature_tower.stl", "tolerance_test-plate.stl", "tolerance_test-pins.stl", "zendrive_u9m_box-box.stl", "zendrive_u9m_box-lid.stl") | ForEach-Object {
+    $old = Join-Path $OutDir $_
+    if (Test-Path $old) { Remove-Item $old }
+}
+
 if (-not $OpenSCADPath) {
     $defaultPath = "C:\Program Files\OpenSCAD\openscad.exe"
     if (Test-Path $defaultPath) {
@@ -53,6 +62,9 @@ function Invoke-Render {
     $sourcePath = Join-Path $RepoRoot $Source
     if (-not (Test-Path $sourcePath)) { throw "Source not found: $sourcePath" }
     Write-Host "Rendering $Source -> $Output"
+    # Delete any previous output first: a failed render must never
+    # leave yesterday's STL in place to be sliced by mistake.
+    if (Test-Path $Output) { Remove-Item $Output }
     if ($Define) {
         & $OpenSCADPath --render --export-format binstl -D $Define -o $Output $sourcePath
     }
