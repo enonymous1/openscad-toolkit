@@ -35,6 +35,15 @@ EXPECTED = {
 
 
 def read_triangles(path: Path) -> list[tuple[tuple[float, float, float], ...]]:
+    """Parse an STL file into a list of triangles.
+
+    Returns a list of (vertex, vertex, vertex) triples, vertex order
+    as stored in the file. Binary STL is recognized by exact length
+    (84-byte header + 50 bytes per triangle); anything else is parsed
+    as ASCII. Raises ValueError on a malformed ASCII vertex line
+    instead of silently dropping it, so the caller can report the
+    file as unparseable rather than as empty.
+    """
     data = path.read_bytes()
     if len(data) >= 84:
         count = struct.unpack("<I", data[80:84])[0]
@@ -64,12 +73,22 @@ def read_triangles(path: Path) -> list[tuple[tuple[float, float, float], ...]]:
 
 
 def check_file(path: Path, expected_min, expected_max) -> list[str]:
+    """Check one STL file; return a list of error strings (empty = pass).
+
+    Checks, in order: the file exists and is non-empty, it parses,
+    its bounding box matches the expected box within TOLERANCE_MM,
+    and every edge is shared by exactly two triangles (closed mesh).
+    On success it prints a PASS line; it never raises for a bad file.
+    """
     errors: list[str] = []
     if not path.is_file():
         return [f"missing: {path.name}"]
     if path.stat().st_size == 0:
         return [f"empty: {path.name}"]
-    triangles = read_triangles(path)
+    try:
+        triangles = read_triangles(path)
+    except ValueError as exc:
+        return [f"unparseable: {path.name} ({exc})"]
     if not triangles:
         return [f"no triangles parsed: {path.name}"]
     vertices = [v for tri in triangles for v in tri]
@@ -106,6 +125,11 @@ def check_file(path: Path, expected_min, expected_max) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
+    """Entry point. argv[1], if given, is the STL directory; the
+    default is openscad_scripts/stls under the repo root. Returns a
+    process exit code: 0 when every expected file passes, 1 otherwise.
+    Extra STLs in the directory are not checked.
+    """
     stl_dir = Path(argv[1]) if len(argv) > 1 else (
         Path(__file__).resolve().parent.parent / "openscad_scripts" / "stls"
     )

@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.1 — 2026-11-01
+
+No model or geometry changes. Staff-review step 1 only:
+
+- `scripts/check_stl.py`: added docstrings for `read_triangles`,
+  `check_file`, and `main`, stating each function's contract. A
+  malformed ASCII STL now reports `FAIL ...: unparseable` instead of
+  dying with a `ValueError` traceback.
+- Added `tests/test_check_stl.py` (standard library `unittest` only,
+  no OpenSCAD needed): valid binary and ASCII files pass; open mesh,
+  wrong bounding box, malformed ASCII, garbage, missing, and empty
+  files all fail with the expected message. Run with
+  `python3 -m unittest discover tests -v` from the repo root.
+
 ## 2.0.0 — 2026-10-28
 
 Standalone modernization of the 2026-07-19 original. The original
