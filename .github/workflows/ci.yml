@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate models.json
+        run: python3 -m json.tool models.json > /dev/null
+      - name: Run unit tests (checker + manifest drift guard)
+        run: python3 -m unittest discover tests -v
       - name: Install OpenSCAD
         run: sudo apt-get update -qq && sudo apt-get install -y -qq openscad
       - name: Check OpenSCAD version

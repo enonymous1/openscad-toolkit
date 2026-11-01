@@ -1,0 +1,46 @@
+{
+  "models": [
+    {
+      "source": "openscad_scripts/examples/calibration_cube.scad",
+      "outputs": [
+        {
+          "file": "calibration_cube.stl"
+        }
+      ]
+    },
+    {
+      "source": "openscad_scripts/examples/temperature_tower.scad",
+      "outputs": [
+        {
+          "file": "temperature_tower.stl"
+        }
+      ]
+    },
+    {
+      "source": "openscad_scripts/examples/tolerance_test.scad",
+      "outputs": [
+        {
+          "file": "tolerance_test-plate.stl",
+          "define": "part_to_render=\"Plate\""
+        },
+        {
+          "file": "tolerance_test-pins.stl",
+          "define": "part_to_render=\"Pins\""
+        }
+      ]
+    },
+    {
+      "source": "openscad_scripts/zendrive_u9m_box/zendrive_u9m_box.scad",
+      "outputs": [
+        {
+          "file": "zendrive_u9m_box-box.stl",
+          "define": "part_to_render=\"Box\""
+        },
+        {
+          "file": "zendrive_u9m_box-lid.stl",
+          "define": "part_to_render=\"Lid\""
+        }
+      ]
+    }
+  ]
+}

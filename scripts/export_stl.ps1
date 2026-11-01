@@ -3,18 +3,22 @@
     Render every OpenSCAD model in this repo to binary STL.
 
 .DESCRIPTION
-    Renders the three calibration examples and the ZenDrive box and lid
-    into openscad_scripts/stls/. The ZenDrive "Both" and "Assembled"
-    previews are not exported: a single STL holding two separate solids
-    is confusing to slice, so Box and Lid are exported separately with
-    the part selected via -D. Each target STL is deleted before its
-    render, so a failed run never leaves a previous STL in place to be
-    sliced by mistake.
+    Renders every model listed in models.json at the repo root into
+    openscad_scripts/stls/ (or -OutDir). The ZenDrive "Both" and
+    "Assembled" previews are not exported: a single STL holding two
+    separate solids is confusing to slice, so Box and Lid are exported
+    separately with the part selected via -D. Each target STL is
+    deleted before its render, so a failed run never leaves a previous
+    STL in place to be sliced by mistake. Previously generated outputs
+    are also cleared up front, so a failure on an early model does not
+    leave stale files for later models behind.
 
     Requires OpenSCAD 2021.01 (or a newer nightly) on PATH as
     openscad.exe, at the default install location, or passed with
-    -OpenSCADPath. If Python is available, scripts/check_stl.py is run
-    afterwards to verify each STL's bounding box and closed mesh.
+    -OpenSCADPath. The manifest is read with ConvertFrom-Json, so no
+    extra tooling is needed to render. If Python is available,
+    scripts/check_stl.py is run afterwards to verify each STL's
+    bounding box and closed mesh.
 
 .EXAMPLE
     .\scripts\export_stl.ps1
@@ -33,12 +37,18 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 if (-not $OutDir) { $OutDir = Join-Path $RepoRoot "openscad_scripts\stls" }
 if (-not (Test-Path $OutDir)) { New-Item -ItemType Directory -Path $OutDir | Out-Null }
 
+$ManifestPath = Join-Path $RepoRoot "models.json"
+if (-not (Test-Path $ManifestPath)) { throw "models.json not found: $ManifestPath" }
+$Manifest = Get-Content $ManifestPath -Raw | ConvertFrom-Json
+
 # Clear previously generated outputs up front: deleting each target
 # only as it is rendered would still leave stale files for models
 # never reached after an early failure.
-@("calibration_cube.stl", "temperature_tower.stl", "tolerance_test-plate.stl", "tolerance_test-pins.stl", "zendrive_u9m_box-box.stl", "zendrive_u9m_box-lid.stl") | ForEach-Object {
-    $old = Join-Path $OutDir $_
-    if (Test-Path $old) { Remove-Item $old }
+foreach ($model in $Manifest.models) {
+    foreach ($output in $model.outputs) {
+        $old = Join-Path $OutDir $output.file
+        if (Test-Path $old) { Remove-Item $old }
+    }
 }
 
 if (-not $OpenSCADPath) {
@@ -76,12 +86,13 @@ function Invoke-Render {
     }
 }
 
-Invoke-Render "openscad_scripts\examples\calibration_cube.scad" (Join-Path $OutDir "calibration_cube.stl")
-Invoke-Render "openscad_scripts\examples\temperature_tower.scad" (Join-Path $OutDir "temperature_tower.stl")
-Invoke-Render "openscad_scripts\examples\tolerance_test.scad" (Join-Path $OutDir "tolerance_test-plate.stl") 'part_to_render="Plate"'
-Invoke-Render "openscad_scripts\examples\tolerance_test.scad" (Join-Path $OutDir "tolerance_test-pins.stl") 'part_to_render="Pins"'
-Invoke-Render "openscad_scripts\zendrive_u9m_box\zendrive_u9m_box.scad" (Join-Path $OutDir "zendrive_u9m_box-box.stl") 'part_to_render="Box"'
-Invoke-Render "openscad_scripts\zendrive_u9m_box\zendrive_u9m_box.scad" (Join-Path $OutDir "zendrive_u9m_box-lid.stl") 'part_to_render="Lid"'
+foreach ($model in $Manifest.models) {
+    foreach ($output in $model.outputs) {
+        $define = ""
+        if ($output.define) { $define = $output.define }
+        Invoke-Render $model.source (Join-Path $OutDir $output.file) $define
+    }
+}
 
 Write-Host "Done. STLs are in $OutDir." -ForegroundColor Green
 

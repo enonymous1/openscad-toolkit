@@ -16,6 +16,7 @@ Standard library only.
 
 from __future__ import annotations
 
+import json
 import struct
 import sys
 from collections import Counter
@@ -124,16 +125,51 @@ def check_file(path: Path, expected_min, expected_max) -> list[str]:
     return errors
 
 
+def manifest_files() -> list[str]:
+    """Return the output filenames listed in models.json, in order.
+
+    models.json is the single render list shared by the export
+    scripts; the checker uses it only to detect drift (see main).
+    Raises OSError, ValueError, or KeyError on a missing, malformed,
+    or misshapen manifest; the caller turns that into a FAIL line.
+    """
+    manifest_path = Path(__file__).resolve().parent.parent / "models.json"
+    with manifest_path.open(encoding="utf-8") as f:
+        manifest = json.load(f)
+    return [
+        output["file"]
+        for model in manifest["models"]
+        for output in model["outputs"]
+    ]
+
+
 def main(argv: list[str]) -> int:
     """Entry point. argv[1], if given, is the STL directory; the
     default is openscad_scripts/stls under the repo root. Returns a
     process exit code: 0 when every expected file passes, 1 otherwise.
-    Extra STLs in the directory are not checked.
+    It also fails if models.json and EXPECTED disagree about which
+    files exist (drift between the render list and the verification
+    list). Extra STLs in the directory itself are still not checked.
     """
     stl_dir = Path(argv[1]) if len(argv) > 1 else (
         Path(__file__).resolve().parent.parent / "openscad_scripts" / "stls"
     )
     errors: list[str] = []
+    try:
+        manifest = manifest_files()
+    except (OSError, ValueError, KeyError) as exc:
+        errors.append(f"manifest unreadable: {exc}")
+        manifest = []
+    else:
+        if len(manifest) != len(set(manifest)):
+            errors.append("manifest lists a duplicate output file")
+        manifest_only = sorted(set(manifest) - set(EXPECTED))
+        expected_only = sorted(set(EXPECTED) - set(manifest))
+        if manifest_only or expected_only:
+            errors.append(
+                "manifest/EXPECTED mismatch: manifest-only "
+                f"{manifest_only}, EXPECTED-only {expected_only}"
+            )
     for name, (expected_min, expected_max) in EXPECTED.items():
         errors.extend(check_file(stl_dir / name, expected_min, expected_max))
     for error in errors:

@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.0.4 — 2026-11-01
+
+No geometry changes. Staff-review step 4 (single render manifest):
+
+- Added `models.json` at the repo root: one entry per model, one
+  output per STL, with an optional `define` part selector. Both
+  export scripts now render exactly what the manifest lists, and
+  stale-output clearing in both scripts also comes from the manifest
+  — there is no longer a hardcoded render list in either script.
+- `scripts/check_stl.py` cross-checks the manifest against its
+  `EXPECTED` table and fails on a mismatch, a duplicate manifest
+  output, or an unreadable manifest, so a model added to one list
+  and not the other is caught instead of silently unchecked.
+- Added `tests/test_manifest.py`: manifest non-empty, output files
+  unique, sources exist, defines are part selectors, and manifest
+  files exactly equal `check_stl.EXPECTED`. CI now validates
+  `models.json` and runs the full unit-test suite before rendering.
+- Trade-off, stated plainly: the shell export now requires python3
+  to read the manifest (the shell has no JSON parser). Python was
+  already required for any verified run; `--skip-check` now skips
+  verification only, not manifest parsing. The PowerShell export
+  reads the manifest natively with `ConvertFrom-Json`, so on Windows
+  Python is still only needed for verification.
+
 ## 2.0.3 — 2026-11-01
 
 Geometry change — STLs rendered from earlier versions are superseded.

@@ -26,8 +26,11 @@ modules, despite the "toolkit" name.
   substitutes a fallback font if it is missing, which changes the
   engraving width without changing the bounding box — so a missing
   font will not fail CI, but the engraving will look different.
-- Python 3.9 or newer (standard library only). The export scripts
-  use it to run `scripts/check_stl.py`, which verifies every STL.
+- Python 3.9 or newer (standard library only). On Linux/macOS the
+  export script also uses it to read `models.json`, so it is required
+  there; on Windows the export script reads the manifest natively,
+  and Python is only needed for the verification step
+  (`scripts/check_stl.py`).
 - PowerShell 5.1 or newer (Windows only, for `export_stl.ps1`).
 - Git, to clone the repository.
 
@@ -123,29 +126,34 @@ python3 scripts/check_stl.py openscad_scripts/stls
 
 ```mermaid
 flowchart LR
-    A[".scad models"] --> B["export_stl.ps1 / .sh"]
+    M["models.json\n(render manifest)"] --> B["export_stl.ps1 / .sh"]
+    A[".scad models"] --> B
     B --> C["STL files\n(openscad_scripts/stls/, gitignored)"]
     C --> D["check_stl.py\n(bounding box + closed mesh)"]
+    M --> D
     D --> E["CI (GitHub Actions)\nrenders + checks every model"]
 ```
 
 ### Adding a model
 
-Today, adding a model touches four places — this is the repo's
-biggest maintenance trap, and it is tracked as a known issue (see the
-staff review's manifest proposal). Until that lands, the checklist is:
+Adding a model touches three places, plus this README:
 
 1. Add the `.scad` file under `openscad_scripts/`.
-2. Add its render calls to both `scripts/export_stl.sh` and
-   `scripts/export_stl.ps1`.
+2. Add an entry to `models.json` (source plus one output per STL,
+   with a `define` part selector where the model has parts). Both
+   export scripts render exactly what the manifest lists — do not
+   add render calls to the scripts.
 3. Add its expected bounding box to `EXPECTED` in
-   `scripts/check_stl.py`.
+   `scripts/check_stl.py`. The checker and the manifest test fail
+   loudly if the manifest and `EXPECTED` disagree.
 4. Add a row to the Models table above, with the checker-verified
    bounding box (render first, then copy the PASS line's numbers).
 
 ### Running the CI steps locally
 
 ```sh
+python3 -m json.tool models.json > /dev/null
+python3 -m unittest discover tests -v
 ./scripts/export_stl.sh
 python3 scripts/check_stl.py openscad_scripts/stls
 python3 -m json.tool profiles/bambu_p1s_profile.sample.json > /dev/null
@@ -211,6 +219,7 @@ source, not a service. "Shipping" here means:
 
 ```text
 openscad-toolkit/
+├── models.json             # Render manifest (single source of truth)
 ├── openscad_scripts/       # OpenSCAD source files
 │   ├── examples/           # Calibration and test models
 │   └── zendrive_u9m_box/   # ZenDrive U9M storage box
@@ -236,7 +245,11 @@ Deployment sections and checker-verified sizes. 2.0.3 (2026-11-01)
 named the ZenDrive divider/groove constants, fixed the cable-side wall
 to a full 3 mm (box and lid each 0.5 mm wider), lowered the divider to
 clear the sliding lid, and made unknown `part_to_render` values fail
-instead of silently rendering Both. See `CHANGELOG.md`
+instead of silently rendering Both. 2.0.4 (2026-11-01) introduced
+`models.json` as the single render list read by both export scripts
+and cross-checked by the checker, with manifest tests and CI steps;
+the shell export now requires python3 to read the manifest. See
+`CHANGELOG.md`
 for what changed in each version.
 
 ## License
