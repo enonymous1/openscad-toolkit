@@ -82,7 +82,7 @@ is stated in each row.
 | Calibration cube, 20 × 20 × 20 mm | `openscad_scripts/examples/calibration_cube.scad` | 20 × 20 × 20 mm |
 | Temperature tower, 190–220 °C sections with embossed labels | `openscad_scripts/examples/temperature_tower.scad` | 30 × 31.6 × 70 mm (31.6 mm deep: the front labels protrude 0.8 mm past the 30 mm block) |
 | Tolerance test: hole plate + pin strip, clearances −0.2 to +0.4 mm | `openscad_scripts/examples/tolerance_test.scad` | Plate 120 × 30 × 6.6 mm (labels rise 0.6 mm above the 6 mm plate); strip 120 × 16 × 9 mm overall (3 mm strip + 6 mm pins) |
-| ASUS ZenDrive U9M storage box with sliding lid | `openscad_scripts/zendrive_u9m_box/zendrive_u9m_box.scad` | Box 150.5 × 174.5 × 21.4 mm; lid 150.5 × 171.1 × 4 mm (including the grip) |
+| ASUS ZenDrive U9M storage box with sliding lid | `openscad_scripts/zendrive_u9m_box/zendrive_u9m_box.scad` | Box 150.5 × 175.0 × 21.4 mm; lid 150.5 × 171.6 × 4 mm (including the grip) |
 
 Also included: a Bambu P1S quick reference and OpenSCAD best
 practices (`printer_information/bambu_p1s.md`), and a starter print
@@ -232,7 +232,11 @@ stale-STL handling in both export scripts (generated outputs are
 cleared up front and each target is deleted before its render; a missing python3 is now an error unless
 `--skip-check` is passed on Linux/macOS) and rewrote this README with
 Description, Prerequisites, Installation, Local Development, and
-Deployment sections and checker-verified sizes. See `CHANGELOG.md`
+Deployment sections and checker-verified sizes. 2.0.3 (2026-11-01)
+named the ZenDrive divider/groove constants, fixed the cable-side wall
+to a full 3 mm (box and lid each 0.5 mm wider), lowered the divider to
+clear the sliding lid, and made unknown `part_to_render` values fail
+instead of silently rendering Both. See `CHANGELOG.md`
 for what changed in each version.
 
 ## License

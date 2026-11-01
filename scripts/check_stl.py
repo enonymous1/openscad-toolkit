@@ -29,8 +29,8 @@ EXPECTED = {
     "temperature_tower.stl": ((-15.0, -15.8, 0.0), (15.0, 15.0, 70.0)),
     "tolerance_test-plate.stl": ((-60.0, -15.0, -3.0), (60.0, 15.0, 3.6)),
     "tolerance_test-pins.stl": ((-60.0, -8.0, -1.5), (60.0, 8.0, 7.5)),
-    "zendrive_u9m_box-box.stl": ((0.0, 0.0, 0.0), (150.5, 174.5, 21.4)),
-    "zendrive_u9m_box-lid.stl": ((0.0, 0.0, 0.0), (150.5, 171.1, 4.0)),
+    "zendrive_u9m_box-box.stl": ((0.0, 0.0, 0.0), (150.5, 175.0, 21.4)),
+    "zendrive_u9m_box-lid.stl": ((0.0, 0.0, 0.0), (150.5, 171.6, 4.0)),
 }
 
 

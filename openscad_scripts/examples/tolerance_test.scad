@@ -91,9 +91,13 @@ if (part_to_render == "Plate") {
   hole_plate();
 } else if (part_to_render == "Pins") {
   pin_strip();
-} else {
+} else if (part_to_render == "Both") {
   // Preview both, side by side.
   hole_plate();
   translate([0, plate_d / 2 + strip_d / 2 + 6, 0])
     pin_strip();
+} else {
+  // A typo'd part name used to fall through to the Both preview
+  // silently and render the wrong part; fail loudly instead.
+  assert(false, str("unknown part_to_render: ", part_to_render));
 }

@@ -1,5 +1,36 @@
 # Changelog
 
+## 2.0.3 — 2026-11-01
+
+Geometry change — STLs rendered from earlier versions are superseded.
+Staff-review step 3 (ZenDrive constants and asserts):
+
+- Named the previously inline ZenDrive constants: `divider_t` (1.5),
+  `join_overlap` (0.2), `cut_overshoot` (0.1), `lid_recess` (1.0),
+  `divider_clearance` (0.2), and `divider_overlap` (0.5), with
+  comments stating why each exists. The groove cut
+  (`floor_thickness + lid_recess + cut_overshoot`) and the lid handle
+  overlap are numerically unchanged.
+- Fixed the cable-side wall (review finding F5): `inner_w` is now
+  derived from the actual cavity layout
+  (`drive_w + 2·clearance + divider_t + cable_slot_w`) instead of
+  `clearance * 3`, which had made it 0.5 mm short. Box outer width
+  174.5 → 175.0 mm, lid width 171.1 → 171.6 mm, and the cable-side
+  wall is now a full 3.0 mm like the other walls. Checker expectations
+  and the README table were updated to match.
+- Fixed the divider/lid interference (review finding F6): the divider
+  now stops `divider_clearance` (0.2 mm) below the lid-groove floor
+  (divider top 18.9 → 17.7 mm, groove floor 17.9 mm) instead of poking
+  1 mm into the groove channel, because the groove floor is the
+  sliding datum. No other ZenDrive dimension changed.
+- New asserts: divider thickness sane, cable cavity ends at or before
+  the inner wall, divider top stays below the groove floor, and
+  divider height positive.
+- Unknown `part_to_render` values now fail with an assert in both
+  `zendrive_u9m_box.scad` and `tolerance_test.scad`, instead of
+  silently falling through to the Both preview and rendering the
+  wrong part. Valid values are unchanged.
+
 ## 2.0.2 — 2026-11-01
 
 No model or geometry changes. Staff-review step 2:
