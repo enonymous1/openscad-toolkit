@@ -24,6 +24,9 @@ which put most of them off the plate entirely, and grew the pins while
 shrinking the holes as clearance increased.)
 */
 
+use <../lib/labels.scad>;
+use <../lib/fit.scad>;
+
 /* [Part] */
 // Select which part to render for STL export. "Both" is preview only:
 // export the parts separately.
@@ -59,15 +62,14 @@ module hole_plate() {
       for (i = [0 : len(clearances) - 1])
         translate([station_x(i), hole_row_y, -1])
           cylinder(h = plate_t + 2,
-                   r = (pin_dia + clearances[i]) / 2, $fn = 64);
+                   r = hole_radius(pin_dia, clearances[i]), $fn = 64);
     }
     // Clearance labels, raised on the top face between the rows.
-    // They overlap 0.2 mm into the plate so label and plate are one solid.
+    // They stand 0.6 mm above the plate: the original code extruded
+    // 0.8 mm from 0.2 mm below the top face (see lib/labels.scad).
     for (i = [0 : len(clearances) - 1])
-      translate([station_x(i), 0, plate_t / 2 - 0.2])
-        linear_extrude(height = 0.8)
-          text(str(clearances[i]), size = 3.5,
-               halign = "center", valign = "center");
+      translate([station_x(i), 0, plate_t / 2 - label_overlap()])
+        emboss_label(clearances[i], 3.5, 0.6);
   }
 }
 
@@ -78,12 +80,10 @@ module pin_strip() {
       translate([station_x(i), 0, strip_t / 2])
         cylinder(h = pin_h, r = pin_dia / 2, $fn = 64);
     // Clearance labels, raised on the top face below the pins.
-    // They overlap 0.2 mm into the strip so label and strip are one solid.
+    // They stand 0.6 mm above the strip, as on the plate.
     for (i = [0 : len(clearances) - 1])
-      translate([station_x(i), -strip_d / 2 + 2.5, strip_t / 2 - 0.2])
-        linear_extrude(height = 0.8)
-          text(str(clearances[i]), size = 3,
-               halign = "center", valign = "center");
+      translate([station_x(i), -strip_d / 2 + 2.5, strip_t / 2 - label_overlap()])
+        emboss_label(clearances[i], 3, 0.6);
   }
 }
 

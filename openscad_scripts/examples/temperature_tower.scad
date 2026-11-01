@@ -17,6 +17,8 @@ and protrudes 0.8 mm toward the viewer. (An earlier version extruded the
 text upward in Z, which buried it inside the blocks.)
 */
 
+use <../lib/labels.scad>;
+
 /* [Tower] */
 temps = [190, 195, 200, 205, 210, 215, 220];
 section_h = 10;
@@ -35,13 +37,13 @@ for (i = [0 : len(temps) - 1]) {
   // Block, centered in X/Y.
   translate([-width / 2, -depth / 2, z])
     cube([width, depth, section_h]);
-  // Embossed label on the front face. rotate([90, 0, 0]) turns the text
-  // plane from XY to XZ and the extrusion direction from +Z to -Y, so
-  // the text protrudes from the front face instead of rising through
-  // the block. It overlaps 0.2 mm into the block so the label and the
-  // block render as one solid, not two solids touching at a face.
-  translate([-width / 2 + 2, -depth / 2 + 0.2, z + 1])
-    rotate([90, 0, 0])
-      linear_extrude(height = label_proud + 0.2)
-        text(str(t), size = label_size, halign = "left", valign = "baseline");
+  // Embossed label on the front face (see lib/labels.scad): the
+  // rotation turns the text plane from XY to XZ and the extrusion
+  // direction from +Z to -Y, so the text protrudes from the front
+  // face instead of rising through the block. The origin sits
+  // label_overlap() inside the block, so the label stands
+  // label_proud above the face.
+  translate([-width / 2 + 2, -depth / 2 + label_overlap(), z + 1])
+    emboss_label(t, label_size, label_proud, [90, 0, 0],
+                 "left", "baseline");
 }

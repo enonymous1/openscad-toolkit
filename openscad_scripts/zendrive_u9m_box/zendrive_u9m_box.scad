@@ -14,6 +14,9 @@
  * before committing to the full box.
  */
 
+use <../lib/labels.scad>;
+use <../lib/printer.scad>;
+
 /* [Part] */
 // Select which part to render for STL export. "Both" and "Assembled"
 // are previews only: export Box and Lid separately.
@@ -67,7 +70,6 @@ divider_overlap = 0.5;
 /* [Color Scheme (Preview Only)] */
 color_box = [0.2, 0.2, 0.2];
 color_lid = [0.75, 0.75, 0.75];
-color_text = [0.1, 0.5, 0.9];
 
 /* [Derived Dimensions] */
 inner_l = drive_l + (clearance * 2);
@@ -107,7 +109,8 @@ assert(wall_thickness + drive_w + (clearance * 2) + divider_t + cable_slot_w
 assert(divider_h > 0, "divider_h must be positive");
 assert((wall_thickness - divider_overlap) + divider_h < groove_z,
        "divider top must stay below the lid-groove floor so the lid slides freely");
-assert(outer_l <= 256 && outer_w <= 256 && outer_h <= 256,
+assert(outer_l <= build_volume()[0] && outer_w <= build_volume()[1]
+         && outer_h <= build_volume()[2],
        "outer dimensions must fit the P1S 256 mm build volume");
 
 echo(str("Outer: ", outer_l, " x ", outer_w, " x ", outer_h, " mm; lid width: ", lid_w, " mm"));
@@ -163,16 +166,13 @@ module lid() {
         cube([8, 30, 1.7]);
     }
 
-    // Engraved text, cut into the top face of the plate. The text
-    // solid starts text_depth below the top face and extends 0.1 mm
-    // above it, so the cut is exactly text_depth deep and visible.
+    // Engraved text, cut into the top face of the plate
+    // (lib/labels.scad's engrave_label, origin on the top face, cut
+    // exactly text_depth deep).
     // (An earlier version placed a full-footprint pad over the plate
     // that covered the text, hiding the engraving.)
-    translate([outer_l / 2, lid_w / 2, floor_thickness - text_depth + 0.05])
-      color(color_text)
-        linear_extrude(height = text_depth + 0.1)
-          text(label_text, size = font_size, font = font_style,
-               halign = "center", valign = "center");
+    translate([outer_l / 2, lid_w / 2, floor_thickness])
+      engrave_label(label_text, font_size, text_depth, font_style);
   }
 }
 

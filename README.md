@@ -218,6 +218,7 @@ openscad-toolkit/
 ├── models.json             # Render manifest (single source of truth)
 ├── docs/assets/            # Visual assets (renders, not photographs)
 ├── openscad_scripts/       # OpenSCAD source files
+│   ├── lib/                # Shared modules/functions (labels, fit, printer)
 │   ├── examples/           # Calibration and test models
 │   └── zendrive_u9m_box/   # ZenDrive U9M storage box
 ├── printer_information/    # Bambu Lab P1S reference
@@ -249,7 +250,11 @@ the shell export now requires python3 to read the manifest. 2.0.5
 (2026-11-01) added the first real visual assets: a rendered hero image
 of the assembled ZenDrive box and a calibration trio image, both in
 `docs/assets/` with capture commands documented there; the pipeline
-diagram (Mermaid) was already in this README since 2.0.2. See
+diagram (Mermaid) was already in this README since 2.0.2. 2.0.6
+(2026-11-01) moved the repeated OpenSCAD patterns into
+`openscad_scripts/lib/` (label embossing/engraving, fit arithmetic,
+P1S constants), imported with `use` so nothing leaks into the
+Customizer, with rendered geometry verified identical to 2.0.5. See
 `CHANGELOG.md`
 for what changed in each version.
 

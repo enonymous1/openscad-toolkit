@@ -1,5 +1,39 @@
 # Changelog
 
+## 2.0.6 — 2026-11-01
+
+Staff-review step 6 (shared OpenSCAD library). New
+`openscad_scripts/lib/`, imported with `use` so no library variable
+leaks into a model's Customizer:
+
+- `labels.scad`: `label_overlap()` (0.2 mm), `emboss_label()` (used
+  by the temperature tower and both tolerance-test parts),
+  `engrave_label()` (used by the ZenDrive lid).
+- `fit.scad`: `hole_dia()` / `hole_radius()` — diametral play
+  (hole = pin + clearance), used by the tolerance test.
+- `printer.scad`: `build_volume()` / `nozzle_dia()` for the Bambu
+  Lab P1S, used by the ZenDrive build-volume assert. These are
+  functions, not variables, because `use` does not import variables
+  at all.
+- `openscad_scripts/lib/README.md` documents the import rule and
+  the label semantics, including the two derived numbers callers
+  should not have to re-derive (tolerance labels stand 0.6 mm above
+  the plate: original 0.8 mm extrusion from 0.2 mm below the top
+  face; lid engraving is exactly `text_depth` deep, see below).
+- Also removed with this cleanup: the `color()` wrapper on the lid
+  engraving cut (a cut has no surface to color) and the now-unused
+  `color_text` variable.
+
+Geometry: verified identical to 2.0.5 — all six renders PASS with
+unchanged bounding boxes and unchanged triangle counts (cube 12,
+tower 4000, plate 3088, pins 3088, box 84, lid 1228). One disclosed
+exception, inside print tolerance: the lid engraving is now exactly
+1.0 mm deep, where the original inline code started 0.05 mm high and
+cut 0.95 mm; outer dimensions and triangle count are unaffected.
+The step 5 hero/trio images were not re-captured: outer geometry is
+unchanged and a 0.05 mm engraving change is invisible at image
+resolution.
+
 ## 2.0.5 — 2026-11-01
 
 No geometry or script changes. Staff-review step 5 (visual assets
