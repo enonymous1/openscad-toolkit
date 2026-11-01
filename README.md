@@ -13,9 +13,7 @@ that render every model to STL and verify the result. This is a
 collection of models plus tooling — not a library of reusable OpenSCAD
 modules, despite the "toolkit" name.
 
-<!-- Visual V1: docs/assets/hero-assembled.png — ZenDrive box, Assembled
-     view, lid seated in the groove. Replace this comment with the image
-     only once the render exists; never ship a placeholder. -->
+![ZenDrive U9M box with the lid seated in its groove](docs/assets/hero-assembled.png)
 
 ## Prerequisites
 
@@ -71,9 +69,7 @@ STLs land in `openscad_scripts/stls/` and are not committed.
 
 ## Models
 
-<!-- Visual V2: docs/assets/calibration-trio.png — cube, temperature
-     tower, and tolerance plate + pin strip in one image. Place it
-     here, above the table, as the visual anchor for the rows below. -->
+![Calibration models: 20 mm cube, temperature tower, and tolerance plate with pin strip](docs/assets/calibration-trio.png)
 
 Sizes below are checker-verified bounding boxes (what
 `scripts/check_stl.py` enforces), not nominal model sizes — labels
@@ -220,6 +216,7 @@ source, not a service. "Shipping" here means:
 ```text
 openscad-toolkit/
 ├── models.json             # Render manifest (single source of truth)
+├── docs/assets/            # Visual assets (renders, not photographs)
 ├── openscad_scripts/       # OpenSCAD source files
 │   ├── examples/           # Calibration and test models
 │   └── zendrive_u9m_box/   # ZenDrive U9M storage box
@@ -248,7 +245,11 @@ clear the sliding lid, and made unknown `part_to_render` values fail
 instead of silently rendering Both. 2.0.4 (2026-11-01) introduced
 `models.json` as the single render list read by both export scripts
 and cross-checked by the checker, with manifest tests and CI steps;
-the shell export now requires python3 to read the manifest. See
+the shell export now requires python3 to read the manifest. 2.0.5
+(2026-11-01) added the first real visual assets: a rendered hero image
+of the assembled ZenDrive box and a calibration trio image, both in
+`docs/assets/` with capture commands documented there; the pipeline
+diagram (Mermaid) was already in this README since 2.0.2. See
 `CHANGELOG.md`
 for what changed in each version.
 

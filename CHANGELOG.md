@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.0.5 — 2026-11-01
+
+No geometry or script changes. Staff-review step 5 (visual assets
+V1, V5, V2):
+
+- `docs/assets/hero-assembled.png` (1200 × 900, 29 KB): the ZenDrive
+  box in Assembled view, lid seated in the groove, engraving, grip,
+  and finger notch visible. Wired into the README directly after the
+  Description.
+- `docs/assets/calibration-trio.png` (1800 × 600, 86 KB): calibration
+  cube, temperature tower (all seven labels 190–220 legible), and
+  tolerance test in Both preview, composited from three preview
+  renders at the same camera angle. Wired into the README at the top
+  of the Models section.
+- `docs/assets/README.md` documents how both images were captured
+  (OpenSCAD 2021.01 preview mode under `xvfb-run`, camera settings,
+  Pillow compositing) so they can be re-captured after a model
+  change. Preview mode is used deliberately: a full `--render`
+  export recolors everything to OpenSCAD's default gold, while
+  preview keeps the file's dark-box / light-lid colors.
+- V5 (the Mermaid pipeline diagram) was already in the README since
+  the 2.0.2 rewrite, so this step confirms it rather than adding it.
+  V3 (tolerance close-up), V4 (lid cross-section), and V6 (terminal
+  demo GIF) remain planned, not captured — and no printed-part
+  photograph belongs in `docs/assets/` until a real print exists.
+
 ## 2.0.4 — 2026-11-01
 
 No geometry changes. Staff-review step 4 (single render manifest):
